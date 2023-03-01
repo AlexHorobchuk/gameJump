@@ -6,5 +6,11 @@
 //
 
 import Foundation
+import SpriteKit
 
-
+class Enemy: SKSpriteNode {
+    static func createEnemy(at point: CGPoint) -> Enemy {
+       let enemy = Enemy()
+        return enemy
+    }
+}

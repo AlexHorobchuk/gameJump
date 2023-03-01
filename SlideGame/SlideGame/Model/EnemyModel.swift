@@ -7,12 +7,7 @@
 
 import Foundation
 
-struct Enemy {
+struct EnemyModel {
     var speed : Int
-    var size :
-}
-
-enum Size {
-    case Small, Medium, Big
 }
 

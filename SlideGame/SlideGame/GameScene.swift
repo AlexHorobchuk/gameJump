@@ -53,7 +53,7 @@ class GameScene: SKScene {
                 if level.identifier == 1 {
                     spriteLevel.position = .init(x: frame.midX, y: 100)
                 } else {
-                    spriteLevel.position = .init(x: CGFloat.random(in: frame.minX...frame.maxX), y: (priviusSpriteLevel?.position.y)! + CGFloat.random(in: 350...600))
+                    spriteLevel.position = .init(x: CGFloat.random(in: frame.minX...frame.maxX), y: (priviusSpriteLevel?.position.y)! + CGFloat.random(in: 450...700))
                 }
                 self.addChild(spriteLevel)
             } else {
