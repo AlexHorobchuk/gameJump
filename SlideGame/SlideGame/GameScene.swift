@@ -35,14 +35,16 @@ class GameScene: SKScene {
     func updateCam() {
         let currentLevel = findLevelNode(identifier: game.currentLevel)
         let nextLevel = findLevelNode(identifier: game.currentLevel + 1)
-        let scale = (currentLevel?.position.distance(point: nextLevel!.position))! / 260
-        let ratio = scale / cam.yScale
+        let distance = (currentLevel?.position.distance(point: nextLevel!.position))!
+        let aimScale = distance / (frame.height * 0.4)
+        let ratio = aimScale / cam.yScale
         cam.run(.sequence([.move(to: .init(x: (currentLevel?.position.x)!, y: (currentLevel?.position.y)! + frame.height * 0.3), duration: 0.3), .scale(by: ratio, duration: 0.7)]))
     }
     
     func updateUI() {
         updateSpritesForLevels(levels: game.gameLevels)
         updateCam()
+        player.position = self.childNode(withName: String(game.currentLevel))!.position
     }
     
     func updateSpritesForLevels(levels: [LevelModel]) {
@@ -53,7 +55,7 @@ class GameScene: SKScene {
                 if level.identifier == 1 {
                     spriteLevel.position = .init(x: frame.midX, y: 100)
                 } else {
-                    spriteLevel.position = .init(x: CGFloat.random(in: frame.minX...frame.maxX), y: (priviusSpriteLevel?.position.y)! + CGFloat.random(in: 450...700))
+                    spriteLevel.position = .init(x: CGFloat.random(in: frame.minX...frame.maxX), y: (priviusSpriteLevel?.position.y)! + CGFloat.random(in: 450...600))
                 }
                 self.addChild(spriteLevel)
             } else {
@@ -95,8 +97,9 @@ extension GameScene: GameLogic {
     }
     
     func failedToMakeToANewSpot(identifier: Int) {
+        player.removeAllActions()
         let goBackToSpot = findLevelNode(identifier: identifier)
-        player.position = goBackToSpot!.position
+        player.run(.move(to: goBackToSpot!.position, duration: 0.1))
     }
     
     func moveToNextSpot(identifier: Int) {

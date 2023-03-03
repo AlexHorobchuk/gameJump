@@ -10,11 +10,7 @@ import Foundation
 
 class LevelModel {
     var primeLevel: Bool
-    var identifier: Int {
-        didSet {
-            createEnemys(identifier: identifier)
-        }
-    }
+    var identifier: Int
     var wasChecked = false
     var bonus: Bonus?
     var bonusQouantity: Int
@@ -29,11 +25,11 @@ class LevelModel {
     }
     
     
-    func createEnemys(identifier: Int) {
-        let qountity = Int.random(in: 1...16)
+    func createEnemys() {
+        let qountity = Int.random(in: 1...10)
         if identifier != 1 {
             for _ in 0..<qountity {
-                enemys.append(EnemyModel(speed: 400 + identifier * 2))
+                enemys.append(EnemyModel(speed: 200 + identifier * 2))
             }
         }
     }
@@ -56,5 +52,6 @@ class LevelModel {
             bonus = Bonus.Money
             bonusQouantity = 5
         }
+        createEnemys()
     }
 }

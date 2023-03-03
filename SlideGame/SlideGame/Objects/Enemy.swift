@@ -9,8 +9,16 @@ import Foundation
 import SpriteKit
 
 class Enemy: SKSpriteNode {
-    static func createEnemy(at point: CGPoint) -> Enemy {
-       let enemy = Enemy()
+    static func createEnemy() -> Enemy {
+        let enemy = Enemy()
+        enemy.texture = .init(image: UIImage(systemName: "minus.circle")!)
+        enemy.size = .init(width: 80, height: 80)
+        enemy.zPosition = 0
+        enemy.physicsBody = .init(circleOfRadius: enemy.size.width / 2)
+        enemy.physicsBody?.categoryBitMask = PhysicCategory.enemy
+        enemy.physicsBody?.contactTestBitMask = PhysicCategory.player
+        enemy.physicsBody?.collisionBitMask = .zero
+        enemy.physicsBody?.usesPreciseCollisionDetection = true
         return enemy
     }
 }

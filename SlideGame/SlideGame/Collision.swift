@@ -17,15 +17,15 @@ struct PhysicCategory {
 
 extension GameScene: SKPhysicsContactDelegate {
     func didEnd(_ contact: SKPhysicsContact) {
-        guard let bodyA = contact.bodyA.node as? SKSpriteNode else {return print("nil")}
-        guard let bodyB = contact.bodyB.node as? SKSpriteNode else {return print("nil")}
+        guard let bodyA = contact.bodyA.node as? SKSpriteNode else { return print("nil") }
+        guard let bodyB = contact.bodyB.node as? SKSpriteNode else { return print("nil") }
         let type = detectCollisionType(bodyA: bodyA, bodyB: bodyB)
         collisionEndActionSwitch(type: type, bodyA: bodyA, bodyB: bodyB)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
-        guard let bodyA = contact.bodyA.node as? SKSpriteNode else {return print("nil")}
-        guard let bodyB = contact.bodyB.node as? SKSpriteNode else {return print("nil")}
+        guard let bodyA = contact.bodyA.node as? SKSpriteNode else { return print("nil") }
+        guard let bodyB = contact.bodyB.node as? SKSpriteNode else { return print("nil") }
         let type = detectCollisionType(bodyA: bodyA, bodyB: bodyB)
         collisionActionSwitch(type: type, bodyA: bodyA, bodyB: bodyB)
     }
@@ -62,6 +62,7 @@ extension GameScene: SKPhysicsContactDelegate {
                 isColliding = false
             }
         case .playerEnemy:
+            isColliding = false
             game.cameToNextSpot(nextSpot: .Fail)
             updateUI()
         case .unknown:
