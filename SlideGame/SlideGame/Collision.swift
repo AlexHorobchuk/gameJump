@@ -13,15 +13,10 @@ struct PhysicCategory {
     static let player: UInt32 = 1
     static let level: UInt32 = 2
     static let enemy: UInt32 = 4
+    static let notActiveEnemy: UInt32 = 8
 }
 
 extension GameScene: SKPhysicsContactDelegate {
-    func didEnd(_ contact: SKPhysicsContact) {
-        guard let bodyA = contact.bodyA.node as? SKSpriteNode else { return print("nil") }
-        guard let bodyB = contact.bodyB.node as? SKSpriteNode else { return print("nil") }
-        let type = detectCollisionType(bodyA: bodyA, bodyB: bodyB)
-        collisionEndActionSwitch(type: type, bodyA: bodyA, bodyB: bodyB)
-    }
     
     func didBegin(_ contact: SKPhysicsContact) {
         guard let bodyA = contact.bodyA.node as? SKSpriteNode else { return print("nil") }
@@ -41,32 +36,23 @@ extension GameScene: SKPhysicsContactDelegate {
         }
     }
     
-    func collisionEndActionSwitch(type: PhysicCollisionType, bodyA: SKSpriteNode, bodyB: SKSpriteNode ) {
-        switch type {
-        case .playerStation:
-            isColliding = true
-            
-        case .playerEnemy:
-            isColliding = false
-        case .unknown:
-            print("unkown colliusion")
-        }
-    }
-    
     func collisionActionSwitch(type: PhysicCollisionType, bodyA: SKSpriteNode, bodyB: SKSpriteNode ) {
         switch type {
         case .playerStation:
-            if isColliding {
+            let identifier = bodyA.physicsBody?.categoryBitMask == PhysicCategory.level ? Int(bodyA.name!) : Int(bodyB.name!)
+            if identifier != game.currentLevel {
+                SoundManager.shared.playSound(for: .madeToStation)
+                VibrationManager.shared.vibrate(for: .light)
                 game.cameToNextSpot(nextSpot: .Success)
                 updateUI()
-                isColliding = false
             }
         case .playerEnemy:
-            isColliding = false
+            SoundManager.shared.playSound(for: .faild)
+            VibrationManager.shared.vibrate(for: .heavy)
             game.cameToNextSpot(nextSpot: .Fail)
             updateUI()
         case .unknown:
-            print("unkown colliusion")
+            return
         }
     }
     

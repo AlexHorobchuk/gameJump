@@ -7,6 +7,6 @@
 
 import Foundation
 
-enum Bonus {
-    case SpeedUP, Shield, Money
+enum Bonus: CaseIterable {
+    case money, shield, speedUp
 }

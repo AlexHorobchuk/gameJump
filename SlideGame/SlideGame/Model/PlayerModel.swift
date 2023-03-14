@@ -8,8 +8,5 @@
 import Foundation
 
 struct PlayerModel {
-    var bonuses = [Bonus.Shield : 0,
-                   Bonus.SpeedUP : 0,
-                   Bonus.Money : 0]
     var speed: Int = 850
 }

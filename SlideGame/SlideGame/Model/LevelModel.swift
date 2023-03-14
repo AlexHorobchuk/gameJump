@@ -11,7 +11,6 @@ import Foundation
 class LevelModel {
     var primeLevel: Bool
     var identifier: Int
-    var wasChecked = false
     var bonus: Bonus?
     var bonusQouantity: Int
     var enemys = [EnemyModel]()
@@ -29,7 +28,7 @@ class LevelModel {
         let qountity = Int.random(in: 1...10)
         if identifier != 1 {
             for _ in 0..<qountity {
-                enemys.append(EnemyModel(speed: 200 + identifier * 2))
+                enemys.append(EnemyModel(speed: 250 + identifier * 2))
             }
         }
     }
@@ -42,14 +41,14 @@ class LevelModel {
         }
         switch Int.random(in: 1...30) {
         case 1...3:
-            bonus = Bonus.SpeedUP
+            bonus = Bonus.speedUp
             bonusQouantity = 3
             
         case 4...6:
-            bonus = Bonus.Shield
-            bonusQouantity = 5
+            bonus = Bonus.shield
+            bonusQouantity = 3
         default:
-            bonus = Bonus.Money
+            bonus = Bonus.money
             bonusQouantity = 5
         }
         createEnemys()

@@ -8,23 +8,43 @@
 import Foundation
 
 protocol GameLogic: AnyObject {
-    func moveToNextSpot(identifier: Int)
     
     func failedToMakeToANewSpot(identifier: Int)
     
     func deleteLevels(levels: [LevelModel])
+    
+    func goToNextSpot(identifier: Int, speed: Int)
+}
+
+protocol UpdatePlayersInfo: AnyObject {
+    func updateScore(score: Int)
+    func updateBonus()
+    
 }
 
 class SlideGame {
     var player = PlayerModel()
-    var count = 0
+    var score = 1 {
+        didSet {
+            updatePlayersInfo?.updateScore(score: score)
+        }
+    }
+    var bonuses = [Bonus: Int]() {
+        didSet {
+            updatePlayersInfo?.updateBonus()
+        }
+    }
     var currentLevel = 1
     var currentSavedLevel = 1
     var gameLevels = [LevelModel]()
     weak var logic: GameLogic?
+    weak var updatePlayersInfo: UpdatePlayersInfo?
     
     init () {
         createLevels()
+        for bonus in Bonus.allCases {
+            bonuses[bonus] = 0
+        }
     }
     
     enum DidCameToNextSpot {
@@ -36,7 +56,7 @@ class SlideGame {
         case .Success:
             if var level = gameLevels.first(where: { $0.identifier == currentLevel + 1 } ) {
                 if level.primeLevel == true {
-                    count += 1
+                    score += 1
                     currentSavedLevel = level.identifier
                     checkLevel(&level)
                     deleteOldLevels(identifier: level.identifier)
@@ -45,18 +65,13 @@ class SlideGame {
                 checkLevel(&level)
                 currentLevel = level.identifier }
         case .Fail:
-            if player.bonuses[Bonus.Shield]! > 0 {
-                player.bonuses[Bonus.Shield]! -= 1
+            if self.bonuses[Bonus.shield]! > 0 {
+                self.bonuses[Bonus.shield]! -= 1
             } else {
                 currentLevel = currentSavedLevel
             }
             logic?.failedToMakeToANewSpot(identifier: currentLevel)
         }
-    }
-    
-    func findNextSpot() {
-        let newLevel = currentLevel + 1
-        logic?.moveToNextSpot(identifier: newLevel)
     }
     
     func deleteOldLevels(identifier: Int) {
@@ -65,10 +80,20 @@ class SlideGame {
         logic?.deleteLevels(levels: oldLevels)
     }
     
+    func moveToNextSpot() {
+        let newIdentifier = currentLevel + 1
+        var speed = player.speed
+        if self.bonuses[.speedUp]! > 0 {
+            speed += 500
+            self.bonuses[.speedUp]! -= 1
+        }
+        logic?.goToNextSpot(identifier: newIdentifier, speed: speed)
+    }
+    
     func checkLevel(_ level: inout LevelModel ) {
-        if !level.wasChecked {
-            player.bonuses[level.bonus!]! += level.bonusQouantity
-            level.wasChecked = true
+        if level.bonus != nil {
+            self.bonuses[level.bonus!]! += level.bonusQouantity
+            level.bonus = nil
         }
     }
     

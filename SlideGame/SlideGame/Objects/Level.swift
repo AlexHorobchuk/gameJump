@@ -21,25 +21,26 @@ class Level: SKSpriteNode {
         level.physicsBody?.contactTestBitMask = PhysicCategory.player
         level.physicsBody?.collisionBitMask = .zero
         level.physicsBody?.usesPreciseCollisionDetection = true
-        level.run(.repeatForever(.rotate(byAngle: .pi, duration: 3)))
+        //level.run(.repeatForever(.rotate(byAngle: .pi, duration: 3)))
         level.createEnemys(for: levelModel)
         return level
     }
     
     func createEnemys(for model: LevelModel) {
-        let enemys = model.enemys.map { _ in Enemy.createEnemy() }
+        let enemys = model.enemys.map { _ in EnemyFactory.createEnemy() }
         var count = enemys.count
+        guard let enemyModel = model.enemys.first else { return }
+        guard let enemyUI = enemys.first else { return }
         var lap = 1
         while count > 0 {
-            let maxAmount = foundMaxAmountOfEnemys(enemySize: enemys.first!.size.width, lap: lap)
+            let maxAmount = foundMaxAmountOfEnemys(enemySize: enemyUI.size.width, lap: lap)
             let random = Int.random(in: 2...maxAmount)
-            let pathCoeficient = CGFloat(1 / maxAmount)
-            let timeForOneCirlce = self.size.width * .pi * CGFloat(lap)  / CGFloat(model.enemys.first!.speed)
+            let timeForOneCirlce = (self.size.width + enemyUI.size.width * CGFloat(lap)) * .pi / CGFloat(enemyModel.speed)
             for i in 1...random {
                 if count > 0 {
                     let node = enemys[count - 1]
-                    let offset = CGFloat(i) * pathCoeficient
-                    let nodePath = createPath(lap: lap, enemySize: (enemys.first?.size.width)!, startAngle: offset)
+                    let offset = CGFloat(i) / CGFloat(maxAmount) * 2.2
+                    let nodePath = createPath(lap: lap, enemySize: enemyUI.size.width, startAngle: offset)
                     let followPath = SKAction.follow(nodePath.cgPath, asOffset: false, orientToPath: true, duration: timeForOneCirlce)
                     node.run(.repeatForever(followPath))
                     self.addChild(node)
@@ -51,10 +52,16 @@ class Level: SKSpriteNode {
     }
     
     func foundMaxAmountOfEnemys(enemySize: Double, lap: Int) -> Int {
-        return Int(self.size.width * .pi * CGFloat(lap) / enemySize) / 2
+        return Int((self.size.width + enemySize * CGFloat(lap)) / enemySize) * 2
     }
     
     func createPath(lap: Int, enemySize: CGFloat, startAngle: CGFloat) -> UIBezierPath {
-        return UIBezierPath(arcCenter: self.position, radius: self.size.width + (enemySize / 2 * CGFloat(lap)) , startAngle: startAngle, endAngle: startAngle + .pi * 2, clockwise: true)
+        let direction = Bool.random()
+        let endAngle = direction ? startAngle + .pi * 2 : startAngle - .pi * 2
+        return UIBezierPath(arcCenter: self.position, radius: (self.size.width / 2 + (enemySize * CGFloat(lap)))  , startAngle: startAngle, endAngle: endAngle, clockwise: direction)
+    }
+    
+    func checkIfwasVisited( level: LevelModel) {
+        self.texture = level.bonus == nil ? .init(image: UIImage(systemName: "circle.dotted")!) : .init(image: UIImage(systemName: "questionmark.circle")!)
     }
 }
